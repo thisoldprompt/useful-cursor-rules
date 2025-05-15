@@ -1,0 +1,84 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: Rules for building Model Context Protocol (MCP) Servers in Go Lang
+alwaysApply: false
+---
+
+# Golang Rules for MCP
+
+## Docs
+@mcp-go-readme
+@mcp-llms-full
+
+## Project Structure
+- Keep main.go in the root of the project
+- Place MCP tool definitions and their corresponding handler functions in separate `.go` files within a `tools` package (e.g., `tools/mytool.go`).
+- Export tool definitions (e.g., as a function returning `mcp.Tool` or a global variable of type `mcp.Tool`) and handler functions from the `tools` package.
+- In `main.go`, import the `tools` package (e.g., `import "<project-module-name>/tools"`) and use `server.AddTool()` to register the tools, referencing the exported definitions and handlers.
+- Ensure a .gitignore file exists in the root of the project
+- Seed .gitignore with go specific best practices
+
+
+
+## Packages and Imports
+
+- Use the [mcp-go](mdc:https:/github.com/mark3labs/mcp-go) library to build the MCP Server.
+- **Core MCP Types**: For tool definitions (using `mcp.NewTool`), parameters (`mcp.WithString`, `mcp.Required`, etc.), and handler request/result types (`mcp.CallToolRequest`, `mcp.CallToolResult`), import the `mcp` package:      
+    ```go
+    import "github.com/mark3labs/mcp-go/mcp"
+    ```
+This provides access to symbols like `mcp.NewTool`, `mcp.CallToolRequest`, `mcp.CallToolResult`, `mcp.WithString`, `mcp.WithDescription`, `mcp.Required`, and `mcp.NewToolResultText`.
+
+- **Server Implementation**: For creating the server instance (`server.NewMCPServer`), serving it (e.g., `server.ServeStdio`), and adding tools (`server.AddTool`), import the `server` package:
+    ```go
+    import "github.com/mark3labs/mcp-go/server"
+    ```
+This provides access to symbols like `server.NewMCPServer`, `server.ServeStdio`, and `server.AddTool`.
+
+## Naming Conventions
+
+- **Go Module Name**: When running `go mod init`, use the project directory name (e.g., `go mod init my-cool-mcp-server`).
+- **Server Name in `main.go`**: The server name passed to `server.NewMCPServer()` should match the project directory name (e.g., `server.NewMCPServer("my-cool-mcp-server", "0.1.0")`).
+- **`.cursor/mcp.json` Server Key**: The primary key for the server configuration in `.cursor/mcp.json` should match the project directory name (e.g., `"my-cool-mcp-server": { ... }`).
+- **`README.md` Titles & Examples**:
+    - The main title in `README.md` should be `# <Project-Directory-Name> MCP Server`.
+    - Example keys in `mcp.json` snippets within `README.md` should use suffixes like `-dev` and `-compiled` (e.g., `"<project-directory-name>-dev"`, `"<project-directory-name>-compiled"`).
+    - The suggested compiled executable name should be the project directory name, typically using underscores if spaces or hyphens are present (e.g., `go build -o <project_directory_name> main.go`).
+
+## Init
+- Initialize Go modules using `go mod init <project-directory-name>` in the project root (see Naming Conventions).
+- Fetch dependencies using `go mod tidy` after initializing modules or adding any new imports.
+
+### Create Initial MCP Server
+- Create the new mcp server project by building a hello-word tool so that we can configure the and test early.
+- Compile the new mcp server by running `go build -o <project_directory_name> main.go`
+
+### Install the MCP Server at the project level
+- Create a .cursor/mcp.json file to register your MCP server so it can be discovered and launched by MCP-compatible clients.
+- Use the project directory name as the key in the mcpServers object. This name should follow the standard naming conventions (e.g., kebab-case like my-cool-mcp-server).
+- The value for each server key should include a "command" field with the full path to the server executable or launch script.
+
+Example for a Go server:
+  ```json
+{
+  "mcpServers": {
+    "my-cool-mcp-server": {
+      "command": "/full/path/to/compiled/executable"
+    }
+  }
+}
+  ```
+
+### Start Documentaion
+- Create a `README.md` file in the project root, following the naming conventions. It should include:
+    - Project title: `# <Project-Directory-Name> MCP Server`.
+    - Placeholder for a detailed description.
+    - Prerequisites (e.g., Go version).
+    - "Getting Started" section (e.g., clone repository, `go mod tidy`).
+    - "Compilation" section with `go build -o <project_directory_name> main.go` instructions and an example `mcp.json`
+    - A "Tools" section to list available MCP tools.
+    - A placeholder for "Contributing" guidelines.
