@@ -8,6 +8,17 @@ Set of Rules Initalizing MCP Servers in GO.
 
 ## How to use the Rules
 - Add rules to .cursor/rule/mcp-go-rule.mdc
+```bash
+mkdir sample-mcp-project && cd sample-mcp-project && mkdir .cursor && mkdir .cursor/rules && cd .cursor/rules
+wget https://raw.githubusercontent.com/thisoldprompt/useful-cursor-rules/refs/heads/main/mcp-go-rules/mcp-go-rules.mdc
+cd ../..
+cursor .
+```
 
-## Chat
-"Initialize a new go mcp server in my workign directory"
+## Prompt
+- Add the rule @mcp-go-rules to the chat
+- **Add the Docs @mcp-go-readme & @mcp-llms-full**
+- Make sure you add the docs and the rules before promptin.
+```
+Initialize a new go mcp server in my working directory
+```
